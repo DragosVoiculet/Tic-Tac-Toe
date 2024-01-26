@@ -109,12 +109,12 @@ function gameController() {
         if(game.checkWin()){
             game.printBoard()
             console.log(`${activePlayer.name} won`)
-            alert(`${activePlayer} won`)
+            alert(`${activePlayer.name} won`)
             game.reset()
             gameState = true ;
         }else{
-            game.printBoard()
             switchPlayer();
+            game.printBoard()
             gameState = false
         }
         }
@@ -141,10 +141,10 @@ function screenControler() {
     squareArr.forEach(square => {
         square.addEventListener('click', () => {
             const spot = parseInt(square.id.split('-')[1]);
-            game.playRound(spot);
             if(square.textContent==''){
             square.textContent=game.getMarker()
             }
+            game.playRound(spot);
             if(game.getGameState()){
                 reset();
             }
