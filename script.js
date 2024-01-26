@@ -1,138 +1,167 @@
+console.log('helo')
 
 
+function gameBoard(){
 
-function Gameboard(){
+    // Initialize board
     const board = [];
-    for(let i = 0 ; i<3 ;i++){
-        board[i]=[]
-        for(let j =0 ;j<3;j++){
-            board[i].push(Cell());
-        }
+    for (let i = 0; i<9; i++){
+        board.push(Cell());
+    
     }
-    const getBoard = () => board
-    const printBoard = () => {
-        const boardWithCellValues = board.map((row) =>row.map((cell)=>cell.getValue()))
-        console.log(boardWithCellValues);
-      };
-      const checkMove = (row, column) => {
-        return board[row][column].getValue() === 0;
-    };
-    const makeMove = (row, column, player) =>{
-        if(checkMove(row,column)){
-            board[row][column].addMove(player)
-        }
+    // I use this to check if all is working
+    const printBoard =() => {
+        const values = board.map(cell=>cell.checkValue())
+        console.log(values)
     }
-    const checkForWin = () => {
-        // Check Rows
-        for (let i = 0; i < 3; i++) {
-          if (
-            board[i][0].getValue() === board[i][1].getValue() &&
-            board[i][1].getValue() === board[i][2].getValue() &&
-            board[i][0].getValue() !== 0
-          ) {
-            return board[i][0].getValue();
-          }
-        }
-      
-        // Check Columns
-        for (let i = 0; i < 3; i++) {
-          if (
-            board[0][i].getValue() === board[1][i].getValue() &&
-            board[1][i].getValue() === board[2][i].getValue() &&
-            board[0][i].getValue() !== 0
-          ) {
-            return board[0][i].getValue();
-          }
-        }
-      
-        // Check Diagonals
-        if (
-          (board[0][0].getValue() === board[1][1].getValue() &&
-            board[1][1].getValue() === board[2][2].getValue()) ||
-          (board[0][2].getValue() === board[1][1].getValue() &&
-            board[1][1].getValue() === board[2][0].getValue())
-        ) {
-          if (board[1][1].getValue() !== 0) {
-            return board[1][1].getValue();
-          }
-        }
-      
-        return 0; // No winner yet
-      };
 
-    return {
-        getBoard,
+    const makeMove = (player, spot) =>{
+        if(board[spot].checkValue()!==player && board[spot].checkValue() === 0){
+        board[spot].addValue(player)
+        return true
+        }
+        return false
+    }
+    //
+    const checkWin = () => {
+        for (let i = 0; i < 3; i++) {
+            // Check horizontal (row) and vertical (column) in each iteration
+            if ((board[i * 3].checkValue() === board[i * 3 + 1].checkValue() &&
+                 board[i * 3 + 1].checkValue() === board[i * 3 + 2].checkValue() &&
+                 board[i * 3].checkValue() !== 0) ||
+                (board[i].checkValue() === board[i + 3].checkValue() &&
+                 board[i + 3].checkValue() === board[i + 6].checkValue() &&
+                 board[i].checkValue() !== 0)) {
+                return true;
+            }
+        }
+    
+        // Check diagonals
+        if ((board[0].checkValue() === board[4].checkValue() &&
+             board[4].checkValue() === board[8].checkValue() &&
+             board[0].checkValue() !== 0) ||
+            (board[2].checkValue() === board[4].checkValue() &&
+             board[4].checkValue() === board[6].checkValue() &&
+             board[2].checkValue() !== 0)) {
+            return true;
+        }
+    
+        return false;
+    };
+    const reset = () =>{
+        for (let i = 0 ; i<9 ; i++){
+            board[i].removeValue();
+        }
+    }
+
+    return{
         printBoard,
         makeMove,
-        checkForWin
-    };
+        checkWin,
+        reset
+    }
 }
 
 function Cell(){
     let value = 0;
-
-    const addMove = (player) =>{
+    const addValue = (player) =>{
+        if(value===0){
         value = player;
-    };
-    
-    const getValue = () => value;
-    
-    return{
-        addMove,
-        getValue
-    };
-}
-function gameController(
-    playerOneName = "Player One",
-    playerTwoName = "Player Two"
-){
-    const players =[
-        {
-            name: playerOneName,
-            token:1
-        },
-        {
-            name:playerTwoName,
-            token:2
-        }
-    ]
-    const board = Gameboard();
-    let activePlayer = players[0];
-
-    const switchPlayer =() =>{
-        activePlayer = activePlayer ===players[0] ? players[1] : players[0]
-    };
-
-    const getActivePlayer = () => activePlayer;
-    
-    const playRound = (row,column)=>{
-        board.makeMove(row,column,activePlayer.token)
-        board.printBoard()
-        switchPlayer();
-        if(board.checkForWin()){
-            console.log('done')
         }
     }
-   
-    return{
-        playRound,
-        activePlayer
+    const removeValue = () => {
+        value = 0;
+    }
+    const checkValue = () => value
+    
+    return {
+        addValue,
+        checkValue,
+        removeValue
     }
 }
-const game = gameController();
+
+function gameController() {
+    const game = gameBoard();
+    const playerx = {
+        token : 1,
+        mark : 'x',
+        name : 'Player x'
+    }
+    const playero = {
+        token : 2,
+        mark : 'o',
+        name : 'Player o'
+    }
+    const players = [playerx,playero]
+    let activePlayer = players[0]
+
+    const switchPlayer = () =>{
+        if(activePlayer === players[0]){
+            activePlayer=players[1]
+        }else
+        activePlayer = players[0]
+    }
+    let gameState = false;
+    const playRound = (spot) =>{
+        console.log("Spot:", spot);
+        if(game.makeMove(activePlayer.token,spot)){
+        if(game.checkWin()){
+            game.printBoard()
+            console.log(`${activePlayer.name} won`)
+            alert(`${activePlayer} won`)
+            game.reset()
+            gameState = true ;
+        }else{
+            game.printBoard()
+            switchPlayer();
+            gameState = false
+        }
+        }
+    }
+    const printBoar = () => game.printBoard()
+    const getMarker = () => activePlayer.mark;
+    const resetGame = () => {
+        game.reset();
+    };
+    const getGameState = () => gameState
+  return{
+    playRound,
+    printBoar,
+    getMarker,
+    getGameState,
+    resetGame
+  }
+    
+}
+function screenControler() {
+    const game = gameController()
+    const squareArr = document.querySelectorAll('.game-square');
+    const resetBtn = document.querySelector('.reset-button')
+    squareArr.forEach(square => {
+        square.addEventListener('click', () => {
+            const spot = parseInt(square.id.split('-')[1]);
+            game.playRound(spot);
+            if(square.textContent==''){
+            square.textContent=game.getMarker()
+            }
+            if(game.getGameState()){
+                reset();
+            }
+        })
+        
+    });
+    resetBtn.addEventListener('click', () => {
+        reset();
+        game.resetGame();
+    });
+        const reset = () =>{
+    squareArr.forEach(square => {
+        square.textContent = ''
+    })}
 
 
+}
+screenControler();
 
 
-
-
-
-/*
-const gameSquareNodeArr = document.querySelectorAll('.game-square')
-gameSquareNodeArr.forEach(square => {
-    square.addEventListener('click',()=>{
-        square.textContent = 'o'
-        Gameboard.addToGame('o')
-    })
-});
-*/

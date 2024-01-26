@@ -12,7 +12,7 @@ body,
 html{
     background-color: var(--background-color) ;
     color: var(--primary-color);
-    font-family: Roboto ,sans-serif, Helvetica, Arial;
+    font-family: sans-serif, Helvetica, Arial;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -40,25 +40,37 @@ li{
 .title button{
     background-color: var(--action-color);
     color: var(--background-color);
-    height: 35px;
-    width: 145px;
+    height: 45px;
+    width: 165px;
     font-weight: 700;
     font-size: 1.3em;
     border-radius: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border: none;
+    margin: 25px;
+}
+.title button:hover {
+    background-color: #264d80; 
 }
 .game-container{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr;
-    margin: 15px;
+    margin: 25px;
 }
 .game-container button{
     background-color: var(--table-color);
     height: 150px;
     width: 150px;
-    box-shadow: 1px 1px 12px;
+    box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.2);
     font-size: 150px;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.game-container button:hover {
+    background-color: #5b9ed8;
 }
